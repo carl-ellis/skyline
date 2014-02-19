@@ -269,10 +269,9 @@ def is_anomalously_anomalous(metric_name, ensemble, datapoint):
     return abs(intervals[-1] - mean) > 3 * stdDev
 
 
-def run_selected_algorithm(timeseries, metric_name):
-    """
-    Filter timeseries and run selected algorithm.
-    """
+def _check_time_series(timeseries):
+    """ Ensure timeseries are not too short or stale """
+
     # Get rid of short series
     if len(timeseries) < MIN_TOLERABLE_LENGTH:
         raise TooShort()
@@ -285,8 +284,12 @@ def run_selected_algorithm(timeseries, metric_name):
     if len(set(item[1] for item in timeseries[-MAX_TOLERABLE_BOREDOM:])) == BOREDOM_SET_SIZE:
         raise Boring()
 
+
+def _analyse_with_ensemble(timeseries, algorithms):
+    """ Analyse selected timeseries with relevant algorithms """
+
     try:
-        ensemble = [globals()[algorithm](timeseries) for algorithm in ALGORITHMS]
+        ensemble = [globals()[algorithm](timeseries) for algorithm in algorithms]
         threshold = len(ensemble) - CONSENSUS
         if ensemble.count(False) <= threshold:
             if ENABLE_SECOND_ORDER:
@@ -299,3 +302,22 @@ def run_selected_algorithm(timeseries, metric_name):
     except:
         logging.error("Algorithm error: " + traceback.format_exc())
         return False, [], 1
+
+
+def run_selected_algorithm(timeseries, metric_name):
+    """
+    Filter timeseries and run selected algorithm.
+    """
+
+    _check_time_series(timeseries)
+    return _analyse_with_ensemble(timeseries, ALGORITHMS)
+
+
+
+
+def run_selected_custom_algorithm(timeseries, metric_name, algorithms, consensus):
+    """
+    Filter timeseries and run selected algorithm on custom metrics.
+    """
+    _check_time_series(timeseries)
+    return _analyse_with_ensemble(timeseries, algorithms)

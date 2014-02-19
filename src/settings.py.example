@@ -99,6 +99,27 @@ ALGORITHMS = [
     'ks_test',
 ]
 
+# Defines a custom analyzer which will run a specific set of algorithms on a subset of metrics
+# defined by the metric filter. If a metric has the filter in it, it will be analyzed.
+# A custom consensus can be chosen to allow more targetted alerting alongside the more 
+# broad analyzer
+#CUSTOM_ANALYSERS = {
+#    'my_service_name' : {
+#        'metric_filter': 'my_service',
+#        'algorithms': [
+#            'stddev_from_average',
+#        ],
+#        'consensus': 1,
+#        'alerter': 'my_service_alerter',
+#    }
+#}
+CUSTOM_ANALYSERS = {}
+
+# This is the total number of custom analyzer processes than can be run by all the custom
+# analyzers. Each custom analyzer will limit either by this number of the number of custom
+# metrics it is analyzing, which ever is smaller.
+CUSTOM_ANALYZER_PROCESSES = 5
+
 # This is the number of algorithms that must return True before a metric is
 # classified as anomalous.
 CONSENSUS = 6

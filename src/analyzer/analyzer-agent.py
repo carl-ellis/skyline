@@ -11,6 +11,7 @@ sys.path.insert(0, dirname(dirname(abspath(__file__))))
 import settings
 
 from analyzer import Analyzer
+from custom_analyzer import CustomAnalyzer
 
 
 class AnalyzerAgent():
@@ -25,8 +26,18 @@ class AnalyzerAgent():
         logger.info('starting skyline analyzer')
         Analyzer(getpid()).start()
 
+        self._run_custom()
+
         while 1:
             sleep(100)
+
+
+    def _run_custom(self):
+        """ Starts custom analysers based off configuration in settings """
+        custom_analyser_settings = settings.CUSTOM_ANALYSERS
+        for custom_name, custom_settings in custom_analyser_settings.items():
+            CustomAnalyzer(getpid(), custom_name, **custom_settings).start()
+
 
 if __name__ == "__main__":
     """
@@ -62,9 +73,16 @@ if __name__ == "__main__":
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
+    clogger = logging.getLogger("CustomAnalyzerLog")
+    clogger.setLevel(logging.DEBUG)
+    cformatter = logging.Formatter("%(asctime)s :: %(process)s :: %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+    chandler = logging.FileHandler(settings.LOG_PATH + '/custom_analyzers.log')
+    chandler.setFormatter(cformatter)
+    clogger.addHandler(chandler)
+
     if len(sys.argv) > 1 and sys.argv[1] == 'run':
         analyzer.run()
     else:
         daemon_runner = runner.DaemonRunner(analyzer)
-        daemon_runner.daemon_context.files_preserve = [handler.stream]
+        daemon_runner.daemon_context.files_preserve = [handler.stream, chandler.stream]
         daemon_runner.do_action()
