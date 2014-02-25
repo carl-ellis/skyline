@@ -99,6 +99,10 @@ ALGORITHMS = [
     'ks_test',
 ]
 
+# This allows a custom module to be loaded into the global namespace of the algorithm.py
+# file. Use this to bring in function from outside of skyline
+CUSTOM_ALGORITHM_MODULE = ''
+
 # This is the number of algorithms that must return True before a metric is
 # classified as anomalous.
 CONSENSUS = 6

@@ -4,11 +4,14 @@ import scipy
 import statsmodels.api as sm
 import traceback
 import logging
+import imp
+import sys
 from time import time
 from msgpack import unpackb, packb
 from redis import StrictRedis
 
 from settings import (
+    CUSTOM_ALGORITHM_MODULE,
     ALGORITHMS,
     CONSENSUS,
     FULL_DURATION,
@@ -21,6 +24,16 @@ from settings import (
 )
 
 from algorithm_exceptions import *
+
+# If you have a custom module for algorithms, load it here and inject into globals
+if CUSTOM_ALGORITHM_MODULE:
+    try:
+        m = imp.load_module(CUSTOM_ALGORITHM_MODULE, *imp.find_module(CUSTOM_ALGORITHM_MODULE))
+        sys.modules['tmp_algorithms'] = m
+        from tmp_algorithms import *
+    except:
+        pass
+
 
 logger = logging.getLogger("AnalyzerLog")
 redis_conn = StrictRedis(unix_socket_path=REDIS_SOCKET_PATH)
