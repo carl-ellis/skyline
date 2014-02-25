@@ -348,5 +348,6 @@ def curry_algorithm_to_global(func_name, kwargs):
         # called f_1()
         global_func_name = '_'.join([str(s) for s in [func_name] + kwargs.values()])
         globals()[global_func_name] = f
+        return global_func_name
     except:
         pass

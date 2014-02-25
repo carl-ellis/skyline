@@ -36,7 +36,11 @@ class CustomAnalyzer(Analyzer):
         for alg in self.algorithms:
             if type(alg) is tuple:
                 # alg will be of the format (name, kwargs)
-                algorithms.curry_algorithm_to_global(alg[0], alg[1])
+                curried_name = algorithms.curry_algorithm_to_global(alg[0], alg[1])
+
+                # Replace tuple with curried name
+                self.algorithms.remove(alg)
+                self.algorithms.append(curried_name)
 
         self.consensus = consensus
         self.alerter = alerter
