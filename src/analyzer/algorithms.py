@@ -326,11 +326,25 @@ def run_selected_algorithm(timeseries, metric_name):
     return _analyse_with_ensemble(timeseries, ALGORITHMS)
 
 
-
-
 def run_selected_custom_algorithm(timeseries, metric_name, algorithms, consensus):
     """
     Filter timeseries and run selected algorithm on custom metrics.
     """
     _check_time_series(timeseries)
     return _analyse_with_ensemble(timeseries, algorithms)
+
+
+def curry_algorithm_to_global(func_name, kwargs):
+    """ If an algorithm needs initial values and as such is a generator, transform the 
+        generator into a curried global function like the rest of the algorithms. This
+        ensures that the algorithm is created only once.
+    """
+    try:
+        f = globals()[func_name](**kwargs)
+
+        # Create a globally friendly name based on arguments, so a curried f(x=1) would be
+        # called f_1()
+        global_func_name = '_'.join([str(s) for s in [func_name] + kwargs.values()])
+        globals()[global_func_name] = f
+    except:
+        pass

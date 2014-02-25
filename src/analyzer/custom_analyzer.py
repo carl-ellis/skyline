@@ -17,6 +17,7 @@ from alerters import trigger_alert
 from algorithms import run_selected_custom_algorithm
 from algorithm_exceptions import *
 from analyzer import Analyzer
+import algorithms
 
 logger = logging.getLogger("CustomAnalyzerLog")
 
@@ -30,6 +31,13 @@ class CustomAnalyzer(Analyzer):
         self.name = name
         self.metric_filter = metric_filter
         self.algorithms = algorithms
+
+        # Ensure algorithms with custom conditions are curried
+        for alg in self.algorithms:
+            if type(alg) is tuple:
+                # alg will be of the format (name, kwargs)
+                algorithms.curry_algorithm_to_global(alg[0], alg[1])
+
         self.consensus = consensus
         self.alerter = alerter
 

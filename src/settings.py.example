@@ -103,11 +103,15 @@ ALGORITHMS = [
 # defined by the metric filter. If a metric has the filter in it, it will be analyzed.
 # A custom consensus can be chosen to allow more targetted alerting alongside the more 
 # broad analyzer
+# Also supports algorithms that can be given custom settings/thresholds. For example:
+#   over_threshold(threshold=5, x)
+# These are defined by putting the func, kwargs in a tuple inside the ALGORITHMS list.
 #CUSTOM_ANALYSERS = {
 #    'my_service_name' : {
 #        'metric_filter': 'my_service',
 #        'algorithms': [
 #            'stddev_from_average',
+#            ('over_threshold', {'threshold': 5}),
 #        ],
 #        'consensus': 1,
 #        'alerter': 'my_service_alerter',
