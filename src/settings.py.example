@@ -124,6 +124,10 @@ CUSTOM_ANALYZER_PROCESSES = 5
 # file. Use this to bring in function from outside of skyline
 CUSTOM_ALGORITHM_MODULE = ''
 
+# This allows custom settings to be loaded from an external module. This can be used to 
+# manage custom analysers without having to bump skyline code versions.
+CUSTOM_SETTINGS_MODULE = ''
+
 # This is the number of algorithms that must return True before a metric is
 # classified as anomalous.
 CONSENSUS = 6
@@ -253,3 +257,14 @@ WEBAPP_IP = '127.0.0.1'
 
 # The port for the webapp
 WEBAPP_PORT = 1500
+
+# If you have a custom module for settings, load it here and inject into globals
+if CUSTOM_SETTINGS_MODULE:
+    import imp
+    import sys
+    try:
+        m = imp.load_module(CUSTOM_ALGORITHM_MODULE, *imp.find_module(CUSTOM_ALGORITHM_MODULE))
+        sys.modules['tmp_algorithms'] = m
+        from tmp_algorithms import *
+    except:
+        pass
