@@ -338,6 +338,8 @@ def curry_algorithm_to_global(func_name, kwargs):
     """ If an algorithm needs initial values and as such is a generator, transform the 
         generator into a curried global function like the rest of the algorithms. This
         ensures that the algorithm is created only once.
+        Example:
+            algorithms.curry_algorithm_to_global('above_threshold', {'threshold': 10})
     """
     try:
         f = globals()[func_name](**kwargs)
